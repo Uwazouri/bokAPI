@@ -58,4 +58,16 @@ class User extends Authenticatable
     {
         return $this->is_admin;
     }
+
+    // En användare kan ha många reviews
+    public function review()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // En användare kan ha flera gillade böcker
+    public function likedBooks()
+    {
+        return $this->hasMany(LikedBook::class);
+    }
 }
