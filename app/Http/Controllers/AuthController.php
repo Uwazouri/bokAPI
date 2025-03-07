@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -23,8 +23,7 @@ class AuthController extends Controller
                 'is_admin' => 'nullable|boolean',
                 'bio' => 'nullable|string|max:255',
                 'current_read' => 'nullable|string|max:255',
-                'avatar_file' => 'nullable|string',
-                'avatar_url' => 'nullable|string'
+                'avatar' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
             ]
         );
 
@@ -34,6 +33,35 @@ class AuthController extends Controller
                 'message' => 'Validation error',
                 'error' => $validator->errors()
             ], 401);
+        }
+
+        // Variabler för avatar
+        $file_path = null;
+        $file_url = null;
+
+        //Kontroll om avatar angiven
+        if ($request->hasFile('avatar')) {
+
+            if ($request->file('avatar')->isValid() == false) {
+                return response()->json([
+                    'message' => 'Uppladding misslyckades på grund av ogiltig fil'
+                ], 400);
+            }
+
+            $file_path = $request->file('avatar')->store('avatars', env('STORAGE_DRIVER', 'local'));
+
+            // Fel vid uppladdning
+            if (!$file_path) {
+                return response()->json([
+                    'message' => 'Uppladdning misslyckades på grund av ett internt fel'
+                ], 500);
+            }
+
+            /** @var \Illuminate\Filesystem\FilesystemManager $disk */
+            $disk = Storage::disk(env('STORAGE_DRIVER', 'local'));
+            $file_url = $disk->url($file_path);
+
+            // TODO maybe check if url conversion worked somehow?
         }
 
         // Ingen användare autentiserad
@@ -53,8 +81,8 @@ class AuthController extends Controller
                     'password' => bcrypt($request['password']),
                     'is_admin' => false,
                     'bio' => $request['bio'] ?? null,
-                    'avatar_file' => $request['avatar_file'] ?? null,
-                    'avatar_url' => $request['avatar_url'] ?? null
+                    'avatar_file' => $file_path,
+                    'avatar_url' => $file_url
                 ]);
 
                 // Skapa token
@@ -80,8 +108,8 @@ class AuthController extends Controller
                 'password' => bcrypt($request['password']),
                 'is_admin' => $adm,
                 'bio' => $request['bio'] ?? null,
-                'avatar_file' => $request['avatar_file'] ?? null,
-                'avatar_url' => $request['avatar_url'] ?? null
+                'avatar_file' => $file_path,
+                'avatar_url' => $file_url
             ]);
 
             // Skapa token
@@ -141,5 +169,79 @@ class AuthController extends Controller
             'message' => 'User logged out!'
         ];
         return response($response, 200);
+    }
+
+    // uppdatera profil (PUT)
+    public function updateProfile(Request $request, string $id)
+    {
+        // Läs in användare som ska uppdateras
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Ingen användare med id' + $id + 'hittades'
+            ], 404);
+        }
+
+        // Läs in autentiserad användare
+        $authUser = $request->user();
+        if ($authUser->id !== $user->id) {
+            return response()->json([
+                'messsage' => 'Du saknar behörighet för att utföra denna åtgärd'
+            ], 403);
+        }
+
+        // Validera ingående data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'bio' => 'nullable|string',
+            'current_read' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
+        ]);
+
+        // variabler för bild
+        $file_path = $user->avatar_file;
+        $file_url = $user->avatar_url;
+
+        // Om bildfil finns i request
+        if ($request->hasFile('avatar')) {
+
+            if ($request->file('avatar')->isValid() == false) {
+                return response()->json([
+                    'message' => 'Uppladding misslyckades på grund av ogiltig fil'
+                ], 400);
+            }
+
+            // Ta bort gammal bild ur storage om det finns en
+            if ($user->avatar_file != null) {
+                if (Storage::exists($user->avatar_file)) {
+                    try {
+                        Storage::disk(env('STORAGE_DRIVER', 'local'))->delete($user->avatar_file);
+                    } catch (\Throwable $th) {
+                        //TODO: hantera storage error till backend server log
+                    }
+                }
+            }
+
+            $file_path = $request->file('avatar')->store('avatars', env('STORAGE_DRIVER', 'local'));
+
+            // Fel vid uppladdning
+            if (!$file_path) {
+                return response()->json([
+                    'message' => 'Uppladdning misslyckades på grund av ett internt fel'
+                ], 500);
+            }
+
+            /** @var \Illuminate\Filesystem\FilesystemManager $disk */
+            $disk = Storage::disk(env('STORAGE_DRIVER', 'local'));
+            $file_url = $disk->url($file_path);
+        }
+        $user->update([
+            'name' => $request->name,
+            'bio' => $request->bio,
+            'current_read' => $request->current_read,
+            'avatar_file' => $file_path,
+            'avatar_url' => $file_url
+        ]);
+        return $user;
     }
 }

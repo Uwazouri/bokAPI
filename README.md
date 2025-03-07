@@ -1,66 +1,56 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Backend för projektuppgift - Bokhörnan
+#### Av Kajsa Classon, VT25. DT210G - Fördjupad frontend-utveckling, Mittuniversitetet.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+En REST-webbtjänst som hanterar användarautentisering och bokrecensioner.
 
-## About Laravel
+Webbtjänsten är skapad med hjälp av ramverket Laravel och använder middlewaren Sanctum för autentisering.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Repo för klientapplikation:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Webbtjänsten finns publicerad på:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Routes
+#### Publika routes
+| Metod         | Ändpunkt                     | Beskrivning   |
+| ------------- | -------------------------    | ------------- |
+| POST          | /api/login                   | Loggar in en användare [^1] |
+| POST          | /api/register                | Registrerar en användare [^2] |
 
-## Learning Laravel
+[^1] Kräver att ett user-objekt skickas med. (Endast email och password)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+[^2] Kräver att ett user-objekt skickas med. Endast inloggad admin kan skapa andra admins. is_admin, bio, current_read och avatar är ej obligatoriska.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Ett user-objekt skickas som JSON med följande struktur:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+``` 
+{
+    "name": "Test Testsson",
+    "email": "test@epost.se",
+    "password": "lösenord",
+    "is_admin": true|false,
+    "bio": "Jag gillar böcker" | null,
+    "current_read": "En bok" | null,
+    "avatar" : image-file | null
+}
+```
 
-## Laravel Sponsors
+#### Privata routes
+| Metod         | Ändpunkt                       | Beskrivning   |
+| ------------- | -------------------------      | ------------- |
+| POST          | /api/logout                    | Loggar ut inloggad användare |
+| POST          | /api/user/{id}?_method=PUT     | Uppdaterar en användares profil (inklusive profilbild) [^3] |
+| PUT           | /api/user/{id}                 | Uppdaterar en användares profil [^4] |
+| ------------- | -------------------------      | ------------- |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+[^2] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio, current_read och avatar. 
 
-### Premium Partners
+[^3] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio och current_read. 
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| ------------- | -------------------------      | ------------- |
+| GET           | /api/products/{id}             | Hämtar produkt med angivet ID |
+| POST          | /api/products                  | Skapar en ny produkt [^4] |
+| DELETE        | /api/products/{id}             | Raderar en produkt med angivet ID |
