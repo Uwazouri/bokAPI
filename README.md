@@ -15,6 +15,8 @@ Webbtjänsten finns publicerad på:
 | ------------- | -------------------------    | ------------- |
 | POST          | /api/login                   | Loggar in en användare [^1] |
 | POST          | /api/register                | Registrerar en användare [^2] |
+| ------------- | -------------------------    | ------------- |
+| GET           | /api/user/{id}               | Hämtar publik information om vald användare (id, namn, bio, current_read och avatar) |
 
 [^1] Kräver att ett user-objekt skickas med. (Endast email och password)
 
@@ -38,13 +40,14 @@ Ett user-objekt skickas som JSON med följande struktur:
 | Metod         | Ändpunkt                       | Beskrivning   |
 | ------------- | -------------------------      | ------------- |
 | POST          | /api/logout                    | Loggar ut inloggad användare |
+| ------------- | -------------------------      | ------------- |
+| GET           | /api/user                      | Hämtar information om inloggad användare |
 | POST          | /api/user/{id}?_method=PUT     | Uppdaterar en användares profil (inklusive profilbild) [^3] |
 | PUT           | /api/user/{id}                 | Uppdaterar en användares profil [^4] |
-| ------------- | -------------------------      | ------------- |
 
-[^2] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio, current_read och avatar. 
+[^3] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio, current_read och avatar. 
 
-[^3] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio och current_read. 
+[^4] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio och current_read. 
 
 
 
