@@ -13,7 +13,7 @@ class Review extends Model
         'comment'
     ];
 
-    // En kommentar tillhör en användare
+    // En recension tillhör en användare
     public function user()
     {
         return $this->belongsTo(User::class);

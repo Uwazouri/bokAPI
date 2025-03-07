@@ -17,6 +17,13 @@ Webbtjänsten finns publicerad på:
 | POST          | /api/register                | Registrerar en användare [^2] |
 | ------------- | -------------------------    | ------------- |
 | GET           | /api/user/{id}               | Hämtar publik information om vald användare (id, namn, bio, current_read och avatar) |
+| GET           | /api/user/{id}/likedbooks    | Hämtar vald användares gillade böcker |
+| GET           | /api/user/{id}/reviews       | Hämtar vald användares recensioner |
+| ------------- | -------------------------    | ------------- |
+| GET           | /api/reviews                 | Hämtar alla recensioner för alla böcker |
+| GET           | /api/review/{id}             | Hämtar en recension med valt id |
+| ------------- | -------------------------    | ------------- |
+| GET           | /api/book/{id}/reviews       | Hämtar alla recensioner för bok med valt id |
 
 [^1] Kräver att ett user-objekt skickas med. (Endast email och password)
 
@@ -44,16 +51,40 @@ Ett user-objekt skickas som JSON med följande struktur:
 | GET           | /api/user                      | Hämtar information om inloggad användare |
 | POST          | /api/user/{id}?_method=PUT     | Uppdaterar en användares profil (inklusive profilbild) [^3] |
 | PUT           | /api/user/{id}                 | Uppdaterar en användares profil [^4] |
+| ------------- | -------------------------      | ------------- |
+| POST          | /api/likedbooks                | Lägger till en bok i inloggad användares gillade böcker [^5] |
+| DELETE        | /api/likedbooks/{id}           | Raderar bok med angivet ID från inloggad användares gillade böcker|
+| ------------- | -------------------------      | ------------- |
+| POST          | /api/review                    | Lägger till en recension för en bok [^6] |
+| PUT           | /api/review/{id}               | Uppdaterar recension med angivet ID [^7] |
+| DELETE        | /api/review/{id}               | Raderar recension med angivet ID |
 
-[^3] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio, current_read och avatar. 
+[^3] Kräver att ett user-objekt skickas med (form data eller json). OBS! Endast namn, bio, current_read och avatar. 
 
-[^4] Kräver att ett user-objekt skickas med. OBS! Endast namn, bio och current_read. 
+[^4] Kräver att ett user-objekt skickas med (json). OBS! Endast namn, bio och current_read. 
 
+[^5] Kräver att id för ett bok-objekt skickas som JSON enligt nedan.
 
+``` 
+{
+    "book_id": "nBHMDwAAQBAJ"
+}
+```
 
+[^6] Kräver att ett recensions-objekt skickas med.
+
+[^7] Kräver att ett recensions-objekt skickas med. OBS! Endast rating och comment.
+
+Ett recensions-objekt skickas som JSON-data med följande struktur:
+
+``` 
+{
+    "book_id": "nBHMDwAAQBAJ",
+    "rating": 5,
+    "comment": "Bra bok!"
+}
 
 
 | ------------- | -------------------------      | ------------- |
 | GET           | /api/products/{id}             | Hämtar produkt med angivet ID |
 | POST          | /api/products                  | Skapar en ny produkt [^4] |
-| DELETE        | /api/products/{id}             | Raderar en produkt med angivet ID |
