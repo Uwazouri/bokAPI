@@ -14,6 +14,7 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register'])->middleware('auth:sanctum'); // Route för att registrera användare
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum'); // Route för att logga ut
 Route::put('/user/{id}', [UserController::class, 'updateProfile'])->middleware('auth:sanctum'); // Route för att logga ut
+Route::put('/user/{id}/deleteavatar', [UserController::class, 'deleteAvatar'])->middleware('auth:sanctum'); // Route för ta bort avatar ur storage
 Route::post('/likedbooks', [LikedBooksController::class, 'addToLikedBooks'])->middleware(('auth:sanctum')); // Route för att lägga till bok i gillade böcker för inloggad användare
 Route::delete('/likedbooks/{id}', [LikedBooksController::class, 'removeFromLikedBooks'])->middleware(('auth:sanctum')); // Route för att ta bort bok från gillade böcker för inloggad användare
 Route::middleware('auth:sanctum')->group(function () {

@@ -5,24 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 use function Avifinfo\read;
 
 class UserController extends Controller
 {
     // Hämta användare
-    public function getUserInfo(string $id){
+    public function getUserInfo(string $id)
+    {
 
         $user = User::find($id);
 
         // Om användare inte finns
-        if(!$user) return response()->json(['message' => 'Ingen användare med valt id hittades'], 404);
+        if (!$user) return response()->json(['message' => 'Ingen användare med valt id hittades'], 404);
 
         return response()->json([
             'id' => $user->id,
             'name' => $user->name,
             'bio' => $user->bio,
-            'curren_read' => $user->current_read,
+            'current_read' => $user->current_read,
             'avatar_file' => $user->avatar_file,
             'avatar_url' => $user->avatar_url
         ]);
@@ -70,11 +72,15 @@ class UserController extends Controller
 
             // Ta bort gammal bild ur storage om det finns en
             if ($user->avatar_file != null) {
-                if (Storage::exists($user->avatar_file)) {
+                
+                // Kontroll att bild finns på disk
+                if (Storage::disk(env('STORAGE_DRIVER', 'local'))->exists($user->avatar_file)) {
                     try {
                         Storage::disk(env('STORAGE_DRIVER', 'local'))->delete($user->avatar_file);
+                        Log::info("Gammal avatar borttagen") . $user->avatar_file;
                     } catch (\Throwable $th) {
                         //TODO: hantera storage error till backend server log
+                        Log::error("Misslyckades att ta bort gammal avatar: " . $user->avatar_file, ['exception' => $th]);
                     }
                 }
             }
@@ -100,5 +106,46 @@ class UserController extends Controller
             'avatar_url' => $file_url
         ]);
         return $user;
+    }
+
+    // Radera avatar för användare
+    public function deleteAvatar(Request $request, string $id)
+    {
+        // Läs in användare som avatar ska tas bort från
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Ingen användare med id' + $id + 'hittades'
+            ], 404);
+        }
+
+        // Läs in autentiserad användare
+        $authUser = $request->user();
+        // Om användare är admin eller användaren som ska uppdateras
+        if ($user->isAdmin() || $authUser->id == $user->id) {
+
+            // Om en avatar finns lagrad
+            if ($user->avatar_file == null) {
+                return response()->json(['message' => 'Det finns ingen avatar att radera'], 400);
+            }
+            // Om avatar finns i storage
+            if (Storage::disk(env('STORAGE_DRIVER', 'local'))->exists($user->avatar_file)) {
+                try {
+                    Storage::disk(env('STORAGE_DRIVER', 'local'))->delete($user->avatar_file);
+                } catch (\Throwable $th) {
+                    //TODO: hantera storage error till backend server log
+                }
+            }
+            $user->update([
+                'avatar_file' => null,
+                'avatar_url' => null
+            ]);
+            return $user;
+        } else {
+            // unauthorized
+            return response()->json([
+                'messsage' => 'Du saknar behörighet för att utföra denna åtgärd'
+            ], 403);
+        }
     }
 }
