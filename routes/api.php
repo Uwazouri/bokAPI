@@ -31,4 +31,5 @@ Route::get('/user/{id}/likedbooks', [LikedBooksController::class, 'getLikedBooks
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/review/{id}', [ReviewController::class, 'show']);
 Route::get('book/{id}/reviews', [ReviewController::class, 'getReviewsForBook']);
+Route::get('book/{bookId}/likes', [LikedBooksController::class, 'getNumberOfLikes']);
 Route::get('user/{id}/reviews', [ReviewController::class, 'getReviewsByUser']);

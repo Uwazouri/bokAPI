@@ -77,4 +77,10 @@ class LikedBooksController extends Controller
 
         return response()->json($likedBooks);
     }
+
+    public function getNumberOfLikes($bookId){
+       $likesCount = LikedBook::where('book_id', $bookId)->count();
+
+       return response()->json(['likes_count' => $likesCount]);
+    }
 }
