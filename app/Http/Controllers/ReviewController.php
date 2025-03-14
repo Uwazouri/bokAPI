@@ -13,7 +13,11 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        return Review::all();
+        $reviews = Review::with('user')->get();
+        $reviews->each(function ($review) {
+            $review->user_name = $review->user->name;
+        });
+        return response()->json($reviews);
     }
 
     /**
@@ -22,11 +26,14 @@ class ReviewController extends Controller
     public function getReviewsForBook(string $id)
     {
         // Läs in alla recentioner där id matchar bok-id
-        $reviews = Review::where('book_id', $id)->get();
+        $reviews = Review::with('user')->where('book_id', $id)->get();
         //Inga recensioner - 404
         if ($reviews->isEmpty()) {
             return response()->json(['message' => 'Det finns inga recensioner för denna bok'], 404);
         }
+        $reviews->each(function ($review) {
+            $review->user_name = $review->user->name;
+        });
         // returnera recensioner
         return response()->json($reviews);
     }
@@ -54,13 +61,15 @@ class ReviewController extends Controller
      */
     public function show(string $id)
     {
-        $review = Review::find($id);
+        $review = Review::with('user')->find($id);
         if (!$review) {
             return response()->json([
                 'message' => 'Ingen recension med detta id hittades'
             ], 404);
         }
-        return $review;
+
+        $review->user_name = $review->user->name;
+        return response()->json($review);
     }
 
     /**
