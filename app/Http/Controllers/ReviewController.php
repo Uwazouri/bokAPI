@@ -89,12 +89,22 @@ class ReviewController extends Controller
         ]);
 
         // Skapa recension
-        return Review::create([
+        $newReview = Review::create([
             'user_id' => $user->id,
             'book_id' => $request->book_id,
             'rating' => $request->rating,
             'comment' => $request->comment
         ]);
+
+        return response()->json([
+            'user_id' => $newReview->user_id,
+            'user_name' => $user->name,
+            'book_id' => $newReview->book_id,
+            'rating' => $newReview->rating,
+            'comment' => $newReview->comment,
+            'created_at' => $newReview->created_at,
+            'updated_at' => $newReview->updated_at,
+        ], 201);
     }
 
     /**
