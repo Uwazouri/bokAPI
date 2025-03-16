@@ -84,6 +84,7 @@ class ReviewController extends Controller
         // Validera input
         $request->validate([
             'book_id' => 'required|string',
+            'book_title' => 'required|string',
             'rating' => 'required|numeric|integer|between:1,5',
             'comment' => 'required|string'
         ]);
@@ -92,6 +93,7 @@ class ReviewController extends Controller
         $newReview = Review::create([
             'user_id' => $user->id,
             'book_id' => $request->book_id,
+            'book_title' => $request->book_title,
             'rating' => $request->rating,
             'comment' => $request->comment
         ]);
@@ -100,6 +102,7 @@ class ReviewController extends Controller
             'user_id' => $newReview->user_id,
             'user_name' => $user->name,
             'book_id' => $newReview->book_id,
+            'book_title' => $newReview->book_title,
             'rating' => $newReview->rating,
             'comment' => $newReview->comment,
             'created_at' => $newReview->created_at,

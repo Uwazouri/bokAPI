@@ -51,6 +51,7 @@ Ett user-objekt skickas som JSON med följande struktur:
 | GET           | /api/user                      | Hämtar information om inloggad användare |
 | POST          | /api/user/{id}?_method=PUT     | Uppdaterar en användares profil (inklusive profilbild) [^3] |
 | PUT           | /api/user/{id}                 | Uppdaterar en användares profil [^4] |
+| PUT           | /user/{id}/deleteavatar        | Uppdaterar en användares profilbild till null och tar bort den ur storage [^4] |
 | ------------- | -------------------------      | ------------- |
 | POST          | /api/likedbooks                | Lägger till en bok i inloggad användares gillade böcker [^5] |
 | DELETE        | /api/likedbooks/{id}           | Raderar bok med angivet ID från inloggad användares gillade böcker|
@@ -67,7 +68,9 @@ Ett user-objekt skickas som JSON med följande struktur:
 
 ``` 
 {
-    "book_id": "nBHMDwAAQBAJ"
+    "book_id": "nBHMDwAAQBAJ",
+    "title": "Collecting Cats",
+    "thumbnail": "url till thumbnail"
 }
 ```
 
@@ -83,8 +86,3 @@ Ett recensions-objekt skickas som JSON-data med följande struktur:
     "rating": 5,
     "comment": "Bra bok!"
 }
-
-
-| ------------- | -------------------------      | ------------- |
-| GET           | /api/products/{id}             | Hämtar produkt med angivet ID |
-| POST          | /api/products                  | Skapar en ny produkt [^4] |

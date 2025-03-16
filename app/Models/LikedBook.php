@@ -8,6 +8,8 @@ class LikedBook extends Model
 {
     protected $fillable = [
         'user_id',
-        'book_id'
+        'book_id',
+        'title',
+        'thumbnail'
     ];
 }

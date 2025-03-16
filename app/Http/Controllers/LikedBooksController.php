@@ -15,7 +15,9 @@ class LikedBooksController extends Controller
         $user = $request->user(); 
 
         $request->validate([
-            'book_id' => 'required|string'
+            'book_id' => 'required|string',
+            'title' => 'required|string',
+            'thumbnail' => 'string'
         ]);
 
         // Kontrollera om bok redan är gillad
@@ -28,7 +30,9 @@ class LikedBooksController extends Controller
         // Skapa gillad bok
         $likedBook = LikedBook::create([
             'user_id' => $user->id,
-            'book_id' => $request->book_id
+            'book_id' => $request->book_id,
+            'title'=> $request->title,
+            'thumbnail' => $request->thumbnail
         ]);
 
         // Returnera gillad bok - 201 created

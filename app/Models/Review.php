@@ -9,6 +9,7 @@ class Review extends Model
     protected $fillable = [
         'user_id',
         'book_id',
+        'book_title',
         'rating',
         'comment'
     ];
