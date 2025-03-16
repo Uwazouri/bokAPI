@@ -64,66 +64,90 @@ class AuthController extends Controller
             // TODO maybe check if url conversion worked somehow?
         }
 
-        // Ingen användare autentiserad
-        if (!$request->user()) {
-            $isA = $request->input('is_admin'); // läs in is_admin från input
-            //Om is_admin skickats med i anropet && är sant (true|1)
-            if ($isA && filter_var($isA, FILTER_VALIDATE_BOOLEAN)) {
-                return response()->json([
-                    'message' => 'Endast administrtörer kan skapa admins'
-                ], 403);
-            } else {
-                // Ingen användare autentiserad och inget is_admin/ falskt is_admin skickat
-                // Skapa ny användare
-                $newUser = User::create([
-                    'name' => $request['name'],
-                    'email' => $request['email'],
-                    'password' => bcrypt($request['password']),
-                    'is_admin' => false,
-                    'bio' => $request['bio'] ?? null,
-                    'avatar_file' => $file_path,
-                    'avatar_url' => $file_url
-                ]);
 
-                // Skapa token
-                $token = $newUser->createToken('auth_token')->plainTextToken;
+        // KOMMENTERA IN DETTA FÖR ATT KUNNA SKAPA VILKEN ANVÄNDARE SOM HELST
+        // VID FÖRSTA DEPLOYMENT 
+        $newUser = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => bcrypt($request['password']),
+            'is_admin' => $request->is_admin,
+            'bio' => $request['bio'] ?? null,
+            'avatar_file' => $file_path,
+            'avatar_url' => $file_url
+        ]);
 
-                $response = [
-                    'message' => 'Användare registrerad',
-                    'user' => $newUser,
-                    'token' => $token
-                ];
+        // Skapa token
+        $token = $newUser->createToken('auth_token')->plainTextToken;
 
-                return response($response, 201); // return response created
-            }
-        }
+        $response = [
+            'message' => 'Användare registrerad',
+            'user' => $newUser,
+            'token' => $token
+        ];
+        return response($response, 201); // return response created
 
-        if ($request->user()->isAdmin()) {
-            // admin kan skapa andra admins
-            $adm = $request->has('is_admin') ? $request->is_admin : false; // om is_admin inte skickas sätt till false
 
-            $newUser = User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => bcrypt($request['password']),
-                'is_admin' => $adm,
-                'bio' => $request['bio'] ?? null,
-                'avatar_file' => $file_path,
-                'avatar_url' => $file_url
-            ]);
+        // **KOMMENTERA UT DETTA VID FÖRSTA DEPLOYMENT FÖR ATT KUNNA SKAPA ADMIN**
+        // // Ingen användare autentiserad
+        // if (!$request->user()) {
+        //     $isA = $request->input('is_admin'); // läs in is_admin från input
+        //     //Om is_admin skickats med i anropet && är sant (true|1)
+        //     if ($isA && filter_var($isA, FILTER_VALIDATE_BOOLEAN)) {
+        //         return response()->json([
+        //             'message' => 'Endast administrtörer kan skapa admins'
+        //         ], 403);
+        //     } else {
+        //         // Ingen användare autentiserad och inget is_admin/ falskt is_admin skickat
+        //         // Skapa ny användare
+        //         $newUser = User::create([
+        //             'name' => $request['name'],
+        //             'email' => $request['email'],
+        //             'password' => bcrypt($request['password']),
+        //             'is_admin' => false,
+        //             'bio' => $request['bio'] ?? null,
+        //             'avatar_file' => $file_path,
+        //             'avatar_url' => $file_url
+        //         ]);
 
-            // Skapa token
-            $token = $newUser->createToken('auth_token')->plainTextToken;
+        //         // Skapa token
+        //         $token = $newUser->createToken('auth_token')->plainTextToken;
 
-            $response = [
-                'message' => 'Användare registrerad',
-                'user' => $newUser,
-                'token' => $token
-            ];
+        //         $response = [
+        //             'message' => 'Användare registrerad',
+        //             'user' => $newUser,
+        //             'token' => $token
+        //         ];
 
-            return response($response, 201); // return response created
+        //         return response($response, 201); // return response created
+        //     }
+        // }
 
-        }
+        // if ($request->user()->isAdmin()) {
+        //     // admin kan skapa andra admins
+        //     $adm = $request->has('is_admin') ? $request->is_admin : false; // om is_admin inte skickas sätt till false
+
+        //     $newUser = User::create([
+        //         'name' => $request['name'],
+        //         'email' => $request['email'],
+        //         'password' => bcrypt($request['password']),
+        //         'is_admin' => $adm,
+        //         'bio' => $request['bio'] ?? null,
+        //         'avatar_file' => $file_path,
+        //         'avatar_url' => $file_url
+        //     ]);
+
+        //     // Skapa token
+        //     $token = $newUser->createToken('auth_token')->plainTextToken;
+
+        //     $response = [
+        //         'message' => 'Användare registrerad',
+        //         'user' => $newUser,
+        //         'token' => $token
+        //     ];
+        // return response($response, 201); // return response created
+        // }
+        // **END**
     }
 
     // Logga in användare
