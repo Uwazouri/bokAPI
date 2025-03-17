@@ -21,6 +21,7 @@ Webbtjänsten finns publicerad på:
 | GET           | /api/user/{id}/reviews       | Hämtar vald användares recensioner |
 | ------------- | -------------------------    | ------------- |
 | GET           | /api/reviews                 | Hämtar alla recensioner för alla böcker |
+| GET           | /api/reviews/latest          | Hämtar de 5 senaste recensionerna |
 | GET           | /api/review/{id}             | Hämtar en recension med valt id |
 | ------------- | -------------------------    | ------------- |
 | GET           | /api/book/{id}/reviews       | Hämtar alla recensioner för bok med valt id |
@@ -83,6 +84,7 @@ Ett recensions-objekt skickas som JSON-data med följande struktur:
 ``` 
 {
     "book_id": "nBHMDwAAQBAJ",
+    "book_title": "Collecting Cats",
     "rating": 5,
     "comment": "Bra bok!"
 }

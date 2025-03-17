@@ -29,6 +29,7 @@ Route::post('/register', [AuthController::class, 'register']); // Route för att
 Route::get('/user/{id}', [UserController::class, 'getUserInfo']); // Hämta publik info för en användare (id, namn, bio, current_read, avatar)
 Route::get('/user/{id}/likedbooks', [LikedBooksController::class, 'getLikedBooks']); // Hämta publik info för en användare (id, namn, bio, current_read, avatar)
 Route::get('/reviews', [ReviewController::class, 'index']);
+Route::get('/reviews/latest', [ReviewController::class, 'getLatestReviews']);
 Route::get('/review/{id}', [ReviewController::class, 'show']);
 Route::get('book/{id}/reviews', [ReviewController::class, 'getReviewsForBook']);
 Route::get('book/{bookId}/likes', [LikedBooksController::class, 'getNumberOfLikes']);

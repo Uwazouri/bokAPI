@@ -21,6 +21,15 @@ class ReviewController extends Controller
     }
 
     /**
+     * Hämta de senaste recensionerna
+     */
+    public function getLatestReviews()
+    {
+        $reviews = Review::with('user')->orderby('created_at')->limit(5)->get();
+        return response()->json($reviews);
+    }
+
+    /**
      * Hämta alla recensioner för en bok
      */
     public function getReviewsForBook(string $id)
