@@ -26,6 +26,9 @@ class ReviewController extends Controller
     public function getLatestReviews()
     {
         $reviews = Review::with('user')->orderby('created_at')->limit(5)->get();
+        $reviews->each(function ($review) {
+            $review->user_name = $review->user->name;
+        });
         return response()->json($reviews);
     }
 
