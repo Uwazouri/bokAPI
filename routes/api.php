@@ -33,4 +33,5 @@ Route::get('/reviews/latest', [ReviewController::class, 'getLatestReviews']);
 Route::get('/review/{id}', [ReviewController::class, 'show']);
 Route::get('book/{id}/reviews', [ReviewController::class, 'getReviewsForBook']);
 Route::get('book/{bookId}/likes', [LikedBooksController::class, 'getNumberOfLikes']);
+Route::get('book/mostliked', [LikedBooksController::class, 'getMostLikedBooks']);
 Route::get('user/{id}/reviews', [ReviewController::class, 'getReviewsByUser']);

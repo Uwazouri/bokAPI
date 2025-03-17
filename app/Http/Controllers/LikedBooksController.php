@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LikedBook;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class LikedBooksController extends Controller
 {
@@ -12,7 +13,7 @@ class LikedBooksController extends Controller
     public function addToLikedBooks(Request $request)
     {
         // Hämta autentiserad användare
-        $user = $request->user(); 
+        $user = $request->user();
 
         $request->validate([
             'book_id' => 'required|string',
@@ -31,7 +32,7 @@ class LikedBooksController extends Controller
         $likedBook = LikedBook::create([
             'user_id' => $user->id,
             'book_id' => $request->book_id,
-            'title'=> $request->title,
+            'title' => $request->title,
             'thumbnail' => $request->thumbnail
         ]);
 
@@ -51,7 +52,7 @@ class LikedBooksController extends Controller
         // Kontrollera om bok finns i användarens lista
         $likedBook = LikedBook::where('user_id', $user->id)->where('book_id', $bookId)->first();
 
-        if(!$likedBook) {
+        if (!$likedBook) {
             return response()->json([
                 'message' => 'Boken finns inte bland dina gillade böcker'
             ], 404);
@@ -66,7 +67,8 @@ class LikedBooksController extends Controller
     }
 
     // Hämta alla gillade böcker för en användare
-    public function getLikedBooks(string $id){
+    public function getLikedBooks(string $id)
+    {
 
         // hitta användare
         $user = User::find($id);
@@ -82,9 +84,18 @@ class LikedBooksController extends Controller
         return response()->json($likedBooks);
     }
 
-    public function getNumberOfLikes($bookId){
-       $likesCount = LikedBook::where('book_id', $bookId)->count();
+    // Hämta antal gillningar för en bok
+    public function getNumberOfLikes($bookId)
+    {
+        $likesCount = LikedBook::where('book_id', $bookId)->count();
 
-       return response()->json(['likes_count' => $likesCount]);
+        return response()->json(['likes_count' => $likesCount]);
+    }
+
+    //Hämta de fem mest gillade böckerna
+    public function getMostLikedBooks()
+    {
+        $mostLikedBooks = LikedBook::select('book_id', 'title', 'thumbnail', DB::raw('count(*) as like_count'))->groupby('book:id', 'title', 'thumbnail')->orderByDesc('like_count')->limit(5)->get();
+        return response()->json($mostLikedBooks);
     }
 }

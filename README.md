@@ -25,6 +25,8 @@ Webbtjänsten finns publicerad på:
 | GET           | /api/review/{id}             | Hämtar en recension med valt id |
 | ------------- | -------------------------    | ------------- |
 | GET           | /api/book/{id}/reviews       | Hämtar alla recensioner för bok med valt id |
+| GET           | /api/book/{id}/likes         | Hämtar antal likes för bok med valt id |
+| GET           | /api/book/mostliked          | De fem mest gillade böckerna |
 
 [^1] Kräver att ett user-objekt skickas med. (Endast email och password)
 
