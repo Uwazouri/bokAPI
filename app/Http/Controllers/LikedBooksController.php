@@ -95,7 +95,7 @@ class LikedBooksController extends Controller
     //Hämta de fem mest gillade böckerna
     public function getMostLikedBooks()
     {
-        $mostLikedBooks = LikedBook::select('book_id', 'title', 'thumbnail', DB::raw('count(*) as like_count'))->groupby('book:id', 'title', 'thumbnail')->orderByDesc('like_count')->limit(5)->get();
+        $mostLikedBooks = LikedBook::select('book_id', 'title', 'thumbnail', DB::raw('count(*) as like_count'))->groupby('book_id', 'title', 'thumbnail')->orderByDesc('like_count')->limit(5)->get();
         return response()->json($mostLikedBooks);
     }
 }
