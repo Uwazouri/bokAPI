@@ -13,7 +13,7 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        $reviews = Review::with('user')->get();
+        $reviews = Review::with('user')->orderby('created_at', 'desc')->get();
         $reviews->each(function ($review) {
             $review->user_name = $review->user->name;
         });
@@ -25,7 +25,7 @@ class ReviewController extends Controller
      */
     public function getLatestReviews()
     {
-        $reviews = Review::with('user')->orderby('created_at')->limit(5)->get();
+        $reviews = Review::with('user')->orderby('created_at', 'desc')->limit(5)->get();
         $reviews->each(function ($review) {
             $review->user_name = $review->user->name;
         });
@@ -38,7 +38,7 @@ class ReviewController extends Controller
     public function getReviewsForBook(string $id)
     {
         // Läs in alla recentioner där id matchar bok-id
-        $reviews = Review::with('user')->where('book_id', $id)->get();
+        $reviews = Review::with('user')->where('book_id', $id)->orderby('created_at', 'desc')->get();
         //Inga recensioner - 404
         if ($reviews->isEmpty()) {
             return response()->json(['message' => 'Det finns inga recensioner för denna bok'], 404);
@@ -57,7 +57,7 @@ class ReviewController extends Controller
     public function getReviewsByUser(string $id)
     {
         // Läs in alla recentioner där id matchar user-id
-        $reviews = Review::where('user_id', $id)->get();
+        $reviews = Review::where('user_id', $id)->orderby('created_at', 'desc')->get();
 
         //Inga recensioner - 404
         if ($reviews->isEmpty()) {
