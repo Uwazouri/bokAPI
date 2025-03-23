@@ -90,3 +90,97 @@ Ett recensions-objekt skickas som JSON-data med följande struktur:
     "rating": 5,
     "comment": "Bra bok!"
 }
+
+### **Hosting the API on a Render Web Service**
+
+#### **Part 1: Setting Up Render Account and Services**
+
+1. **Create an Account**:
+   - Sign up at [Render.com](https://render.com) if you don’t already have an account.
+   - Log in and create a new Hobby Workspace. You can name it something like “Hobby Space” for organization.
+
+2. **Create a PostgreSQL Database**:
+   - In your selected workspace, create a new PostgreSQL database.
+   - Name it `bookhornan`, and optionally assign it to a new project for better organization.
+   - Select **EU Central** as the region and choose the free plan (note: it expires after 30 days).
+
+#### **Part 2: Preparing Your Laravel Project**
+
+Ensure your project is set up to work seamlessly with Docker. These files are critical:
+- `conf/nginx/nginx-site.conf`
+- `scripts/00-laravel-deploy.sh`
+- `.dockerignore`
+- `Dockerfile`
+
+#### **Part 3: Testing the Project Locally**
+
+1. **Set Up the `.env` File**:
+   - Create or update your `.env` file with the following variables to connect to your Render database:
+     ```env
+     DB_CONNECTION=pgsql
+     DB_HOST=<External_DB_Host>
+     DB_PORT=5432
+     DB_DATABASE=<Database_Name>
+     DB_USERNAME=<Database_Username>
+     DB_PASSWORD=<Database_Password>
+     ```
+   - Use the **External Database URL** (found on the Render database Info page) to populate these variables. It follows this format:
+     ```
+     postgresql://DB_USERNAME:DB_PASSWORD@DB_HOST/DB_DATABASE
+     ```
+
+2. **Add Remote Access Control**:
+   - On the Render database Info page, add your computer's IP address to the remote access control settings.
+
+3. **Install Dependencies**:
+   - Run these commands to set up your local environment:
+     ```bash
+     composer install
+     npm install
+     php artisan key:generate
+     php artisan migrate
+     ```
+
+4. **Ensure PHP Extensions**:
+   - Enable `pdo_pgsql` and `pgsql` extensions in your PHP configuration (`php.ini`).
+
+5. **Run the Laravel Development Server**:
+   - Start the server locally:
+     ```bash
+     php artisan serve
+     ```
+
+6. **Test the API**:
+   - Use tools like Postman or Thunder Client to verify your API functionality.
+
+#### **Part 4: Deploying to Render Web Service**
+
+1. **Create a New Web Service**:
+   - On Render, create a new Web Service and connect it to your GitHub repository (or use a public Git repo).
+   - Select your Laravel API project and name the service, e.g., `bookhornanAPI`.
+   - Assign it to the same project as your database.
+   - Choose **Docker** as the runtime environment and select **EU Central** region with the free plan.
+
+2. **Configure Environment Variables**:
+   - Add these variables to the Web Service settings:
+     ```env
+     APP_KEY=<Your_App_Key>
+     DB_CONNECTION=pgsql
+     DB_HOST=<Internal_DB_Host>
+     DB_PORT=5432
+     DB_DATABASE=<Database_Name>
+     DB_USERNAME=<Database_Username>
+     DB_PASSWORD=<Database_Password>
+     ```
+   - Use the **Internal Database URL** for database-related variables.
+   - Generate the `APP_KEY` locally with:
+     ```bash
+     php artisan key:generate --show
+     ```
+
+3. **Automatic Deployment**:
+   - Once the Web Service is created, Render will automatically pull from the `main` branch and deploy your app. Future pushes to `main` will trigger redeployments.
+
+---
+
+Pray to the AI gods everything still works as when this was written.
