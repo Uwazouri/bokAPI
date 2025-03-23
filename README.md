@@ -90,6 +90,7 @@ Ett recensions-objekt skickas som JSON-data med följande struktur:
     "rating": 5,
     "comment": "Bra bok!"
 }
+```
 
 ### **Hosting the API on a Render Web Service**
 
