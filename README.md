@@ -94,6 +94,14 @@ Ett recensions-objekt skickas som JSON-data med följande struktur:
 
 ### **Hosting the API on a Render Web Service**
 
+This forked API is hosted on Render at
+
+```
+https://bookhornenapi.onrender.com
+```
+
+This is how I setup that Web Service.
+
 #### **Part 1: Setting Up Render Account and Services**
 
 1. **Create an Account**:
